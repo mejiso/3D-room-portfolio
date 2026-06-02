@@ -21,7 +21,7 @@ type RoomSceneProps = {
   vinylPosition: [number, number, number];
 };
 
-const blenderModelUrl = import.meta.env.VITE_ROOM_MODEL_URL || '';
+const blenderModelUrl = import.meta.env.VITE_ROOM_MODEL_URL || '/models/sofiaroom.glb';
 const blenderSceneScale = 1;
 const blenderWoodSurfaceNames = new Set([
   'Cube.099',

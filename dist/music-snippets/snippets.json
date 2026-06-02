@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Lamp",
+    "artist": "Sofia",
+    "src": "/music-snippets/track2_lamp.wav",
+    "note": "Full track"
+  },
+  {
+    "title": "Midday",
+    "artist": "Sofia",
+    "src": "/music-snippets/track3_midday.wav",
+    "note": "Full track"
+  },
+  {
+    "title": "Shoes",
+    "artist": "Sofia",
+    "src": "/music-snippets/track4_shoes.wav",
+    "note": "Full track"
+  },
+  {
+    "title": "Girl",
+    "artist": "Sofia",
+    "src": "/music-snippets/track5_girl.wav",
+    "note": "Full track"
+  },
+  {
+    "title": "Tether",
+    "artist": "Sofia",
+    "src": "/music-snippets/track6_tether.wav",
+    "note": "Full track"
+  }
+]

@@ -140,7 +140,7 @@ export function PortfolioOverlay({
             </div>
             <div className="mt-4 space-y-4 text-sm leading-6 text-ink/85">
               <p>
-                Hello! My name is Sofia Erykah Mejia and welcome to my interactive 3D personal portfolio! This portfolio was designed using Blender for the 3D room assets and built with React, TypeScript, Three.js / React Three Fiber, HTML, and CSS. Fun Fact: This is an accurate build on my actual real life room!
+                Hello! My name is Sofia Erykah Mejia, and welcome to my interactive 3D personal portfolio. I designed the 3D room assets in Blender and built the site using React, TypeScript, Three.js, React Three Fiber, HTML, and CSS. Fun fact: the room is modeled after my actual real-life room!
               </p>
               <p>
                 To explore the portfolio, click on the floating icons around the room. Each icon moves the camera closer to that area and opens a section with more information about my background, experience, projects, and interests.

@@ -120,14 +120,14 @@ export function PortfolioOverlay({
         {isInfoOpen ? (
           <div
             ref={infoPanelRef}
-            className="pointer-events-auto absolute left-4 top-20 z-40 w-[min(27rem,calc(100%-1.5rem))] rounded-2xl bg-white/80 p-4 shadow-modal backdrop-blur-md border border-white/70 text-ink"
+            className="pointer-events-auto absolute left-4 top-20 z-40 w-[min(22rem,calc(100%-1.5rem))] rounded-xl bg-white/80 p-3 shadow-modal backdrop-blur-md border border-white/70 text-ink"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-ink/70">
                   Portfolio Guide
                 </p>
-                <h3 className="mt-1 text-lg font-black text-ink">How to use this portfolio</h3>
+                <h3 className="mt-1 text-base font-black text-ink">How to use this portfolio</h3>
               </div>
               <button
                 type="button"
@@ -138,7 +138,7 @@ export function PortfolioOverlay({
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="mt-4 space-y-4 text-sm leading-6 text-ink/85">
+            <div className="mt-3 space-y-3 text-xs leading-5 text-ink/85">
               <p>
                 Hello! My name is Sofia Erykah Mejia, and welcome to my interactive 3D personal portfolio. I designed the 3D room assets in Blender and built the site using React, TypeScript, Three.js, React Three Fiber, HTML, and CSS. Fun fact: the room is modeled after my actual real-life room!
               </p>
@@ -186,6 +186,12 @@ export function PortfolioOverlay({
                     className="block font-semibold text-ink underline"
                   >
                     GitHub
+                  </a>
+                  <a
+                    href="mailto:mejiso.dev@gmail.com"
+                    className="block font-semibold text-ink underline"
+                  >
+                    Email
                   </a>
                 </div>
               </div>
@@ -512,8 +518,8 @@ function SongSnippetPanel({
           <Disc3 className="h-4 w-4" />
         </span>
         <div>
-          <h3 className="font-black text-ink">Preview of Some Songs I've Produced + Sang</h3>
-          <p className="text-xs font-semibold text-ink/60">Original music</p>
+          <h3 className="font-black text-ink">Some of my Original Music!</h3>
+          <p className="text-xs font-semibold text-ink/60">Songs</p>
         </div>
       </div>
 

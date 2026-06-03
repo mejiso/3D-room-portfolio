@@ -499,7 +499,7 @@ export const portfolioSections: PortfolioSection[] = [
     lookAt: [1.15, 0.88, 0.95],
     color: '#bf7f3f',
     summary:
-      'Professional Background in Music Production & Composition',
+      'Professional Background in Music Production',
     bullets: [
       'Produced 150+ digital projects and pitched 50+ tracks as an Audio Systems Producer for ATUNES.',
       'Music has shaped the way I think about rhythm, iteration, detail, and user experience.',
@@ -657,12 +657,6 @@ export const portfolioSections: PortfolioSection[] = [
       'My favorite game is Omori, and I also love Undertale, Minecraft, and Roblox.',
     ],
     tags: [
-      'Norah Jones',
-      'Laufey',
-      'Bruno Major',
-      'Blender',
-      'Omori',
-      'Music Production',
     ],
   },
 ];

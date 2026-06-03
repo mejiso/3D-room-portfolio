@@ -182,8 +182,7 @@ export const portfolioSections: PortfolioSection[] = [
           'Relevant Coursework: Object-Oriented Programming, CS1, Calculus 1 & 2, Discrete Mathematics, Computer Logic & Organization.',
         ],
         tech: [
-          'Computer Science',
-          'UCF',
+          'C', 'Python', 'Java', 'Flutter', 'Dart', 'React', 'TypeScript', 'Three.js', 'WebMIDI', 'WebAudio', 'Canvas API',
         ],
       },
 
@@ -200,10 +199,11 @@ export const portfolioSections: PortfolioSection[] = [
           'Applying computer science fundamentals to technical projects while building stronger engineering habits and professional judgment.',
         ],
         tech: [
+          'Java',
           'Software Engineering',
-          'Debugging',
+          'Selenium',
           'Professional Workflows',
-          'Mission-Driven Systems',
+          'Mission-Driven Systems', 'TestNG', 'Test Verification', 'Automated Testing',
         ],
       },
       {
@@ -224,7 +224,6 @@ export const portfolioSections: PortfolioSection[] = [
           'R',
           'Flutter',
           'Dart',
-          'RegEx',
           'Clinical Data',
           'Accessibility',
         ],
@@ -244,7 +243,6 @@ export const portfolioSections: PortfolioSection[] = [
         tech: [
           'FinTech',
           'Engineering Summit',
-          'Business Case',
           'Professional Development',
         ],
       },
@@ -267,7 +265,6 @@ export const portfolioSections: PortfolioSection[] = [
           'Ableton Live',
           'Music',
           'Creative Coding',
-          'Interaction Design',
           'Audio Tools',
         ],
       },
@@ -287,7 +284,6 @@ export const portfolioSections: PortfolioSection[] = [
           'Patient Transport',
           'Clinical Workflow',
           'HIPAA Compliance',
-          'Charting',
           'Direct Patient Care',
         ],
       },

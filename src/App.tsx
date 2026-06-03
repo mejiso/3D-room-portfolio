@@ -234,7 +234,7 @@ export default function App() {
   return (
     <main
       className={`white-mouse-cursor room-gradient relative h-full w-full overflow-hidden ${nightMode ? 'night-mode' : ''}`}
-      onPointerDownCapture={playMouseClick}
+
     >
       <RoomScene
         activeSection={activeSection}
@@ -242,9 +242,16 @@ export default function App() {
         nightMode={nightMode}
         onReady={() => setSceneReady(true)}
         onPlaceHotspot={realHotspotsReady ? undefined : addHotspotDraft}
-        onPlaceVinyl={placeVinyl}
+        onPlaceVinyl={(p) => {
+          playMouseClick();
+          placeVinyl(p);
+        }}
         onMoveVinyl={moveVinyl}
-        onSelect={setActiveSection}
+        onSelect={(section) => {
+          playMouseClick();
+          setActiveSection(section);
+        }}
+        onInteractableClick={playMouseClick}
         musicHotspotPosition={musicHotspotPosition}
         trophyHotspotPosition={trophyHotspotPosition}
         vinylPlacementMode={vinylPlacementMode}

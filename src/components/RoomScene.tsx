@@ -15,6 +15,7 @@ type RoomSceneProps = {
   onPlaceVinyl?: (point: [number, number, number]) => void;
   onMoveVinyl: (position: [number, number, number]) => void;
   onSelect: (section: PortfolioSection) => void;
+  onInteractableClick?: () => void;
   musicHotspotPosition?: [number, number, number];
   trophyHotspotPosition?: [number, number, number];
   vinylPlacementMode: boolean;
@@ -839,6 +840,7 @@ export function RoomScene({
   onPlaceVinyl,
   onMoveVinyl,
   onSelect,
+  onInteractableClick,
   musicHotspotPosition,
   trophyHotspotPosition,
   vinylPlacementMode,
@@ -913,6 +915,7 @@ export function RoomScene({
               musicHotspotPosition={musicHotspotPosition}
               onSelect={onSelect}
               trophyHotspotPosition={trophyHotspotPosition}
+              onInteractableClick={onInteractableClick}
             />
             <VinylRecord
               isMusicPlaying={isMusicPlaying}
@@ -968,11 +971,13 @@ function BlenderHotspots({
   musicHotspotPosition,
   onSelect,
   trophyHotspotPosition,
+  onInteractableClick,
 }: {
   activeSection: PortfolioSection | null;
   musicHotspotPosition?: [number, number, number];
   onSelect: (section: PortfolioSection) => void;
   trophyHotspotPosition?: [number, number, number];
+  onInteractableClick?: () => void;
 }) {
   return (
     <group>
@@ -991,6 +996,7 @@ function BlenderHotspots({
             point={point}
             showLabel={!activeSection}
             onSelect={onSelect}
+            onInteractableClick={onInteractableClick}
           />
         );
       })}
@@ -1147,12 +1153,14 @@ function BlenderHotspot({
   point,
   showLabel,
   onSelect,
+  onInteractableClick,
 }: {
   active: boolean;
   section: PortfolioSection;
   point: [number, number, number];
   showLabel: boolean;
   onSelect: (section: PortfolioSection) => void;
+  onInteractableClick?: () => void;
 }) {
   const group = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -1170,6 +1178,7 @@ function BlenderHotspot({
         position={point}
         onClick={(event) => {
           event.stopPropagation();
+          onInteractableClick?.();
           onSelect(section);
         }}
         onPointerOver={(event) => {
@@ -2096,9 +2105,10 @@ type InteractiveProps = {
   children: React.ReactNode;
   position?: [number, number, number];
   showLabel?: boolean;
+  onInteractableClick?: () => void;
 };
 
-function InteractiveObject({ section, onSelect, children, position = [0, 0, 0], showLabel = true }: InteractiveProps) {
+function InteractiveObject({ section, onSelect, children, position = [0, 0, 0], showLabel = true, onInteractableClick }: InteractiveProps) {
   const group = useRef<Group>(null);
   const [hovered, setHovered] = useState(false);
 
@@ -2110,6 +2120,7 @@ function InteractiveObject({ section, onSelect, children, position = [0, 0, 0], 
 
   const select = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
+    onInteractableClick?.();
     onSelect(section);
   };
 
@@ -2133,6 +2144,7 @@ function InteractiveObject({ section, onSelect, children, position = [0, 0, 0], 
             className="rounded-full border border-white/70 bg-ink/80 px-3 py-1 text-xs font-semibold text-paper shadow-lg transition hover:border-pink-200 hover:bg-pink-200 hover:text-ink"
             onClick={(event) => {
               event.stopPropagation();
+              onInteractableClick?.();
               onSelect(section);
             }}
           >

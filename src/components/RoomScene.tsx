@@ -11,14 +11,10 @@ type RoomSceneProps = {
   isMusicPlaying: boolean;
   nightMode: boolean;
   onReady?: () => void;
-  onPlaceHotspot?: (point: [number, number, number]) => void;
-  onPlaceVinyl?: (point: [number, number, number]) => void;
-  onMoveVinyl: (position: [number, number, number]) => void;
   onSelect: (section: PortfolioSection) => void;
   onInteractableClick?: () => void;
   musicHotspotPosition?: [number, number, number];
   trophyHotspotPosition?: [number, number, number];
-  vinylPlacementMode: boolean;
   vinylPosition: [number, number, number];
 };
 
@@ -26,9 +22,9 @@ const blenderModelUrl = import.meta.env.VITE_ROOM_MODEL_URL || '/models/sofiaroo
 const blenderScenePosition: [number, number, number] = [0, 0, 0];
 const blenderSceneRotation: [number, number, number] = [0, 0, 0];
 const blenderSceneScale = 1;
-export const blenderCalibratedVinylPosition: [number, number, number] = [8.893, 0.195, 5.8];
-export const blenderCalibratedMusicHotspotPosition: [number, number, number] = [8.893, 1.355, 5.8];
-export const blenderCalibratedTrophyHotspotPosition: [number, number, number] = [3.05, 4.78, -6.98];
+export const blenderCalibratedVinylPosition: [number, number, number] = [9.267, 0.54, 4.07];
+export const blenderCalibratedMusicHotspotPosition: [number, number, number] = [9.446, 1.348, 3.615];
+export const blenderCalibratedTrophyHotspotPosition: [number, number, number] = [0.542, 4.733, -7.646];
 const blenderWoodSurfaceNames = new Set([
   'Cube.099',
   'Cube099',
@@ -836,14 +832,10 @@ export function RoomScene({
   isMusicPlaying,
   nightMode,
   onReady,
-  onPlaceHotspot,
-  onPlaceVinyl,
-  onMoveVinyl,
   onSelect,
   onInteractableClick,
   musicHotspotPosition,
   trophyHotspotPosition,
-  vinylPlacementMode,
   vinylPosition,
 }: RoomSceneProps) {
   const hasBlenderModel = Boolean(blenderModelUrl);
@@ -899,9 +891,6 @@ export function RoomScene({
           <group position={blenderScenePosition} rotation={blenderSceneRotation} scale={blenderSceneScale}>
             <BlenderRoomModel
               onReady={onReady}
-              onPlaceHotspot={onPlaceHotspot}
-              onPlaceVinyl={onPlaceVinyl}
-              vinylPlacementMode={vinylPlacementMode}
             />
             <BlenderOpenWindowFrame />
             <BlenderBedBlankets />
@@ -920,21 +909,17 @@ export function RoomScene({
             <VinylRecord
               isMusicPlaying={isMusicPlaying}
               hasBlenderModel={hasBlenderModel}
-              onPlaceHotspot={onPlaceHotspot}
-              onMove={onMoveVinyl}
               position={vinylPosition}
             />
             <ContactShadows position={[0, 0.015, 0]} opacity={nightMode ? 0.08 : 0.16} scale={9} blur={3.4} far={4} />
           </group>
         ) : (
           <>
-            <RoomShell onPlaceVinyl={onPlaceVinyl} vinylPlacementMode={vinylPlacementMode} />
+            <RoomShell />
             <Furniture activeSection={activeSection} onSelect={onSelect} />
             <VinylRecord
               isMusicPlaying={isMusicPlaying}
               hasBlenderModel={hasBlenderModel}
-              onPlaceHotspot={onPlaceHotspot}
-              onMove={onMoveVinyl}
               position={vinylPosition}
             />
             <ContactShadows position={[0, 0.015, 0]} opacity={nightMode ? 0.08 : 0.16} scale={9} blur={3.4} far={4} />
@@ -1007,14 +992,10 @@ function BlenderHotspots({
 function VinylRecord({
   isMusicPlaying,
   hasBlenderModel,
-  onPlaceHotspot,
-  onMove,
   position,
 }: {
   isMusicPlaying: boolean;
   hasBlenderModel: boolean;
-  onPlaceHotspot?: (point: [number, number, number]) => void;
-  onMove: (position: [number, number, number]) => void;
   position: [number, number, number];
 }) {
   const record = useRef<Group>(null);
@@ -1227,17 +1208,7 @@ function BlenderHotspot({
   );
 }
 
-function BlenderRoomModel({
-  onReady,
-  onPlaceHotspot,
-  onPlaceVinyl,
-  vinylPlacementMode,
-}: {
-  onReady?: () => void;
-  onPlaceHotspot?: (point: [number, number, number]) => void;
-  onPlaceVinyl?: (point: [number, number, number]) => void;
-  vinylPlacementMode: boolean;
-}) {
+function BlenderRoomModel({ onReady }: { onReady?: () => void }) {
   const { scene } = useGLTF(blenderModelUrl) as { scene: Group };
   const [isPrepared, setIsPrepared] = useState(false);
   const preparedScene = useRef<Group | null>(null);
@@ -1408,28 +1379,7 @@ function BlenderRoomModel({
 
   if (!isPrepared) return <RoomLoadingScreen label="Loading" />;
 
-  return (
-    <primitive
-      object={scene}
-      onClick={(event: ThreeEvent<MouseEvent>) => {
-        if (!vinylPlacementMode && !onPlaceHotspot) return;
-        event.stopPropagation();
-        const localPoint = scene.worldToLocal(event.point.clone());
-        const point: [number, number, number] = [
-          Number(localPoint.x.toFixed(3)),
-          Number(localPoint.y.toFixed(3)),
-          Number(localPoint.z.toFixed(3)),
-        ];
-
-        if (vinylPlacementMode && onPlaceVinyl) {
-          onPlaceVinyl(point);
-          return;
-        }
-
-        onPlaceHotspot?.(point);
-      }}
-    />
-  );
+  return <primitive object={scene} />;
 }
 
 const topBookshelfBooks: Array<{
@@ -1982,30 +1932,12 @@ function RoomLights({ nightMode }: { nightMode: boolean }) {
   );
 }
 
-function RoomShell({
-  onPlaceVinyl,
-  vinylPlacementMode,
-}: {
-  onPlaceVinyl?: (point: [number, number, number]) => void;
-  vinylPlacementMode: boolean;
-}) {
+function RoomShell() {
   const renderTexture = useTexture('/roomrender_1png.png');
 
   return (
     <group>
-      <mesh
-        receiveShadow
-        position={[0, -0.04, 0]}
-        onClick={(event) => {
-          if (!vinylPlacementMode || !onPlaceVinyl) return;
-          event.stopPropagation();
-          onPlaceVinyl([
-            Number(event.point.x.toFixed(3)),
-            Number(event.point.y.toFixed(3)),
-            Number(event.point.z.toFixed(3)),
-          ]);
-        }}
-      >
+      <mesh receiveShadow position={[0, -0.04, 0]}>
         <boxGeometry args={[7.2, 0.08, 6.6]} />
         <meshStandardMaterial color="#cba46f" roughness={0.72} />
       </mesh>

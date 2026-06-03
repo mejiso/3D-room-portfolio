@@ -17,6 +17,8 @@ export type PortfolioDropdown = {
   description: string;
   bullets: string[];
   tech: string[];
+  imageAlt?: string;
+  imageSrc?: string;
   links?: { label: string; href: string }[];
 };
 
@@ -39,6 +41,13 @@ export type PortfolioSection = {
 export const homeCamera = {
   position: [5.5, 4.45, 6.35] as Vector3Tuple,
   lookAt: [0.1, 0.95, -0.45] as Vector3Tuple,
+};
+
+const dropdownImages = {
+  atunes: '/dropdown-images/atunes.png',
+  bny: '/dropdown-images/bny.png',
+  limbitless: '/dropdown-images/limbitless.jpeg',
+  lockheedMartin: '/dropdown-images/lockheed-martin.png',
 };
 
 const featuredProjects: PortfolioDropdown[] = [
@@ -116,6 +125,8 @@ const featuredProjects: PortfolioDropdown[] = [
     subtitle: 'Limbitless Solutions',
     date: 'Clinical Software Project',
     location: 'Orlando, FL',
+    imageAlt: 'Limbitless Solutions logo',
+    imageSrc: dropdownImages.limbitless,
     description:
       'Collaborated with the Research team to develop a scheduler for managing clinical trials. The scheduler allows participants to sign up for trial slots and allows researchers to input their availability.',
     bullets: [
@@ -135,6 +146,8 @@ const featuredProjects: PortfolioDropdown[] = [
     subtitle: 'Limbitless Solutions',
     date: 'Clinical Software Project',
     location: 'Orlando, FL',
+    imageAlt: 'Limbitless Solutions logo',
+    imageSrc: dropdownImages.limbitless,
     description:
       'Revamped the Weekly Reports page by fixing bugs and improving the design for better usability and readability.',
     bullets: [
@@ -191,6 +204,8 @@ export const portfolioSections: PortfolioSection[] = [
         subtitle: 'Lockheed Martin',
         date: 'May 2026 – Present',
         location: 'Orlando, FL',
+        imageAlt: 'Lockheed Martin logo',
+        imageSrc: dropdownImages.lockheedMartin,
         description:
           'Selected for Lockheed Martin’s College Work Experience Program as a Software Engineering intern, contributing to mission-driven engineering projects while gaining hands-on experience in professional software development workflows.',
         bullets: [
@@ -211,6 +226,8 @@ export const portfolioSections: PortfolioSection[] = [
         subtitle: 'Limbitless Solutions',
         date: 'August 2025 – Present',
         location: 'Orlando, FL',
+        imageAlt: 'Limbitless Solutions logo',
+        imageSrc: dropdownImages.limbitless,
         description:
           'Clinical data analysis, research, and accessibility-focused software work supporting EMG-powered prosthetics, XR rehabilitation, and clinical trial operations for children with limb differences.',
         bullets: [
@@ -233,6 +250,8 @@ export const portfolioSections: PortfolioSection[] = [
         subtitle: 'BNY',
         date: 'May 2026 – Present',
         location: 'Remote',
+        imageAlt: 'BNY logo',
+        imageSrc: dropdownImages.bny,
         description:
           'Selected nationwide for BNY’s Engineering Sophomore Summit, a competitive six-week pre-internship program focused on financial technology, engineering career paths, senior leaders, and a coding business case challenge.',
         bullets: [
@@ -251,6 +270,8 @@ export const portfolioSections: PortfolioSection[] = [
         subtitle: 'ATUNES',
         date: 'January 2024 – January 2025',
         location: 'South Korea (Remote)',
+        imageAlt: 'ATUNES logo',
+        imageSrc: dropdownImages.atunes,
         description:
           'International music production and audio systems work across a remote creative production team.',
         bullets: [
@@ -391,6 +412,8 @@ export const portfolioSections: PortfolioSection[] = [
         subtitle: 'Limbitless Solutions',
         date: 'Clinical Software Project',
         location: 'Orlando, FL',
+        imageAlt: 'Limbitless Solutions logo',
+        imageSrc: dropdownImages.limbitless,
         description:
           'Collaborated with the Research team to develop a scheduler for managing clinical trials. The scheduler allows participants to sign up for trial slots and allows researchers to input their availability.',
         bullets: [
@@ -410,6 +433,8 @@ export const portfolioSections: PortfolioSection[] = [
         subtitle: 'Limbitless Solutions',
         date: 'Clinical Software Project',
         location: 'Orlando, FL',
+        imageAlt: 'Limbitless Solutions logo',
+        imageSrc: dropdownImages.limbitless,
         description:
           'Revamped the Weekly Reports page by fixing bugs and improving the design for better usability and readability.',
         bullets: [
@@ -492,8 +517,8 @@ export const portfolioSections: PortfolioSection[] = [
   },
   {
     id: 'personal',
-    title: 'Music Experience and Hobbies',
-    objectName: 'Music Experience / Hobbies',
+    title: 'Music Experience',
+    objectName: 'Music Experience',
     kicker: 'Music + Creative Technology',
     cameraPosition: [1.3, 1.85, 3.1],
     lookAt: [1.15, 0.88, 0.95],

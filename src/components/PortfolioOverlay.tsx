@@ -24,10 +24,10 @@ type PortfolioOverlayProps = {
   onPauseMusic: () => void;
   onPlaySong: (song: SongSnippet) => void;
   onSelect: (section: PortfolioSection) => void;
-  onToggleVinylPlacement: () => void;
   onClose: () => void;
-  vinylPlacementMode: boolean;
 };
+
+const guidePortraitSrc = '/sofia-guide-photo.jpg';
 
 const iconMap: Record<SectionId, ComponentType<{ className?: string; style?: CSSProperties }>> = {
   experience: BriefcaseBusiness,
@@ -54,9 +54,7 @@ export function PortfolioOverlay({
   onPauseMusic,
   onPlaySong,
   onSelect,
-  onToggleVinylPlacement,
   onClose,
-  vinylPlacementMode,
 }: PortfolioOverlayProps) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const infoPanelRef = useRef<HTMLDivElement | null>(null);
@@ -120,7 +118,7 @@ export function PortfolioOverlay({
         {isInfoOpen ? (
           <div
             ref={infoPanelRef}
-            className="pointer-events-auto absolute left-4 top-20 z-40 w-[min(22rem,calc(100%-1.5rem))] rounded-xl bg-white/80 p-3 shadow-modal backdrop-blur-md border border-white/70 text-ink"
+            className="pointer-events-auto absolute left-4 top-20 z-40 max-h-[min(34rem,calc(100dvh-6rem))] w-[min(22rem,calc(100%-1.5rem))] overflow-y-auto rounded-xl border border-white/70 bg-white/80 p-3 text-ink shadow-modal backdrop-blur-md"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -142,6 +140,11 @@ export function PortfolioOverlay({
               <p>
                 Hello! My name is Sofia Erykah Mejia, and welcome to my interactive 3D personal portfolio. I designed the 3D room assets in Blender and built the site using React, TypeScript, Three.js, React Three Fiber, HTML, and CSS. Fun fact: the room is modeled after my actual real-life room!
               </p>
+              <img
+                src={guidePortraitSrc}
+                alt="Sofia Erykah Mejia"
+                className="mx-auto h-44 w-44 rounded-full border-4 border-white/85 object-cover object-[50%_32%] shadow-lg shadow-ink/12"
+              />
               <p>
                 To explore the portfolio, click on the floating icons around the room. Each icon moves the camera closer to that area and opens a section with more information about my background, experience, projects, and interests.
               </p>
@@ -278,11 +281,6 @@ export function PortfolioOverlay({
           </>
         ) : null}
       </div>
-      {vinylPlacementMode ? (
-        <div className="pointer-events-auto absolute left-3 top-16 rounded-lg border border-white/60 bg-white/80 px-3 py-2 text-sm font-bold text-ink shadow-modal backdrop-blur-md sm:left-5 sm:top-20">
-          Click the floor to place the record.
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -414,6 +412,16 @@ function DropdownList({
           </summary>
 
           <div className="mt-3 border-t border-ink/10 pt-3">
+            {item.imageSrc ? (
+              <div className="mb-3 flex justify-center rounded-lg bg-white/60 p-3 shadow-sm">
+                <img
+                  src={item.imageSrc}
+                  alt={item.imageAlt ?? `${item.title} image`}
+                  className="h-20 max-w-[13rem] rounded-md object-contain"
+                  loading="lazy"
+                />
+              </div>
+            ) : null}
             <p className="text-sm leading-6 text-ink/78">{item.description}</p>
 
             <ul className="mt-3 space-y-2 text-sm leading-6 text-ink/82">

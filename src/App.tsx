@@ -1,4 +1,4 @@
-import { Music2, Pause, Play, SkipForward, Trophy } from 'lucide-react';
+import { Pause, Play, SkipForward } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { PortfolioOverlay, type SongSnippet } from './components/PortfolioOverlay';
 import {
@@ -9,11 +9,6 @@ import {
 } from './components/RoomScene';
 import { portfolioSections, sectionById, type PortfolioSection } from './data/portfolioSections';
 
-export type HotspotDraft = {
-  id: number;
-  point: [number, number, number];
-};
-
 const autoplaySong: SongSnippet = {
   title: 'Sunrise',
   artist: 'Sofia',
@@ -23,18 +18,9 @@ const autoplaySong: SongSnippet = {
 
 const songSnippetManifestUrl = '/music-snippets/snippets.json';
 const roomModelUrl = import.meta.env.VITE_ROOM_MODEL_URL || '/models/sofiaroom.glb';
-const defaultVinylPosition: [number, number, number] = blenderCalibratedVinylPosition;
-const defaultMusicHotspotPosition: [number, number, number] = blenderCalibratedMusicHotspotPosition;
-const defaultTrophyHotspotPosition: [number, number, number] = blenderCalibratedTrophyHotspotPosition;
-const staleVinylPositions: Array<[number, number, number]> = [[3.92, 0.54, -4.48]];
-const staleMusicHotspotPositions: Array<[number, number, number]> = [
-  [3.815, 4.308, -7.339],
-  [3.92, 1.82, -4.48],
-];
-const staleTrophyHotspotPositions: Array<[number, number, number]> = [[2.85, 4.62, -7.16]];
-const musicHotspotStorageKey = 'sofia-room-music-hotspot-position';
-const vinylPositionStorageKey = 'sofia-room-vinyl-position';
-const trophyHotspotStorageKey = 'sofia-room-trophy-hotspot-position';
+const vinylPosition: [number, number, number] = blenderCalibratedVinylPosition;
+const musicHotspotPosition: [number, number, number] = blenderCalibratedMusicHotspotPosition;
+const trophyHotspotPosition: [number, number, number] = blenderCalibratedTrophyHotspotPosition;
 const mouseClickSoundSrc = '/sounds/PcMouseClick_S08TE.975.wav';
 
 function formatPlaybackTime(seconds: number) {
@@ -47,74 +33,22 @@ function formatPlaybackTime(seconds: number) {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
-function loadVinylPosition(): [number, number, number] {
-  return loadStoredPosition(vinylPositionStorageKey, defaultVinylPosition, staleVinylPositions);
-}
-
-function loadTrophyHotspotPosition(): [number, number, number] {
-  return loadStoredPosition(trophyHotspotStorageKey, defaultTrophyHotspotPosition, staleTrophyHotspotPositions);
-}
-
-function loadMusicHotspotPosition(): [number, number, number] {
-  return loadStoredPosition(musicHotspotStorageKey, defaultMusicHotspotPosition, staleMusicHotspotPositions);
-}
-
-function loadStoredPosition(
-  storageKey: string,
-  fallback: [number, number, number],
-  stalePositions: Array<[number, number, number]> = [],
-): [number, number, number] {
-  if (typeof window === 'undefined') return fallback;
-
-  try {
-    const savedPosition = window.localStorage.getItem(storageKey);
-    const parsedPosition = savedPosition ? JSON.parse(savedPosition) : null;
-
-    if (
-      Array.isArray(parsedPosition)
-      && parsedPosition.length === 3
-      && parsedPosition.every((value) => typeof value === 'number')
-    ) {
-      const position = parsedPosition as [number, number, number];
-      return stalePositions.some((stalePosition) => positionsMatch(position, stalePosition)) ? fallback : position;
-    }
-  } catch {
-    return fallback;
-  }
-
-  return fallback;
-}
-
-function positionsMatch(first: [number, number, number], second: [number, number, number]) {
-  return first.every((value, index) => Math.abs(value - second[index]) < 0.001);
-}
-
 export default function App() {
   const [activeSection, setActiveSection] = useState<PortfolioSection | null>(null);
-  const [hotspotDrafts, setHotspotDrafts] = useState<HotspotDraft[]>([]);
   const [sceneReady, setSceneReady] = useState(false);
   const [currentSong, setCurrentSong] = useState<SongSnippet | null>(autoplaySong);
   const [playlistSongs, setPlaylistSongs] = useState<SongSnippet[]>([]);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [playbackTime, setPlaybackTime] = useState(0);
   const [trackDuration, setTrackDuration] = useState(0);
-  const [musicHotspotPosition, setMusicHotspotPosition] = useState<[number, number, number]>(loadMusicHotspotPosition);
   const [nightMode, setNightMode] = useState(false);
-  const [trophyHotspotPosition, setTrophyHotspotPosition] = useState<[number, number, number]>(loadTrophyHotspotPosition);
-  const [vinylPlacementMode, setVinylPlacementMode] = useState(false);
-  const [vinylPosition, setVinylPosition] = useState<[number, number, number]>(loadVinylPosition);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const clickAudioRef = useRef<HTMLAudioElement | null>(null);
   const autoplayAttemptedRef = useRef(false);
   const usesBlenderRoom = Boolean(roomModelUrl);
-  const realHotspotsReady = true;
   const visibleSections = usesBlenderRoom
     ? [sectionById.experience, sectionById.personal, sectionById.achievements, sectionById.research, sectionById.funfacts]
     : portfolioSections;
-
-  const addHotspotDraft = (point: [number, number, number]) => {
-    setHotspotDrafts((drafts) => [...drafts, { id: Date.now(), point }].slice(-8));
-  };
 
   const playSong = (song: SongSnippet) => {
     const audio = audioRef.current;
@@ -164,23 +98,6 @@ export default function App() {
     const currentIndex = playlistSongs.findIndex((song) => song.src === currentSong?.src);
     const nextSong = playlistSongs[currentIndex >= 0 ? (currentIndex + 1) % playlistSongs.length : 0];
     playSong(nextSong);
-  };
-
-  const placeVinyl = (point: [number, number, number]) => {
-    const nextPosition: [number, number, number] = [
-      point[0],
-      point[1] + (usesBlenderRoom ? 0.2 : 0.08),
-      point[2],
-    ];
-
-    setVinylPosition(nextPosition);
-    setVinylPlacementMode(false);
-    window.localStorage.setItem(vinylPositionStorageKey, JSON.stringify(nextPosition));
-  };
-
-  const moveVinyl = (position: [number, number, number]) => {
-    setVinylPosition(position);
-    window.localStorage.setItem(vinylPositionStorageKey, JSON.stringify(position));
   };
 
   const playMouseClick = () => {
@@ -241,12 +158,6 @@ export default function App() {
         isMusicPlaying={isMusicPlaying}
         nightMode={nightMode}
         onReady={() => setSceneReady(true)}
-        onPlaceHotspot={realHotspotsReady ? undefined : addHotspotDraft}
-        onPlaceVinyl={(p) => {
-          playMouseClick();
-          placeVinyl(p);
-        }}
-        onMoveVinyl={moveVinyl}
         onSelect={(section) => {
           playMouseClick();
           setActiveSection(section);
@@ -254,7 +165,6 @@ export default function App() {
         onInteractableClick={playMouseClick}
         musicHotspotPosition={musicHotspotPosition}
         trophyHotspotPosition={trophyHotspotPosition}
-        vinylPlacementMode={vinylPlacementMode}
         vinylPosition={vinylPosition}
       />
       {usesBlenderRoom && !sceneReady ? (
@@ -277,9 +187,7 @@ export default function App() {
         onPauseMusic={pauseMusic}
         onPlaySong={playSong}
         onSelect={setActiveSection}
-        onToggleVinylPlacement={() => setVinylPlacementMode((isPlacing) => !isPlacing)}
         onClose={() => setActiveSection(null)}
-        vinylPlacementMode={vinylPlacementMode}
       />
       {currentSong && !activeSection ? (
         <div className={`pointer-events-auto fixed bottom-3 right-3 z-50 w-[min(20.5rem,calc(100vw-1.5rem))] px-0 py-0 sm:bottom-5 sm:right-5 ${nightMode ? 'text-white' : 'text-ink'}`}>

@@ -22,7 +22,12 @@ type RoomSceneProps = {
 };
 
 const blenderModelUrl = import.meta.env.VITE_ROOM_MODEL_URL || '/models/sofiaroom.glb';
+const blenderScenePosition: [number, number, number] = [0, 0, 0];
+const blenderSceneRotation: [number, number, number] = [0, 0, 0];
 const blenderSceneScale = 1;
+export const blenderCalibratedVinylPosition: [number, number, number] = [8.893, 0.195, 5.8];
+export const blenderCalibratedMusicHotspotPosition: [number, number, number] = [8.893, 1.355, 5.8];
+export const blenderCalibratedTrophyHotspotPosition: [number, number, number] = [3.05, 4.78, -6.98];
 const blenderWoodSurfaceNames = new Set([
   'Cube.099',
   'Cube099',
@@ -252,6 +257,7 @@ const blenderHotspots: Array<{
   cameraPosition: [number, number, number];
   lookAt?: [number, number, number];
 }> = [
+    // These hotspot coordinates are calibrated in Blender room model space; keep icons and decorative assets under the same parent transform.
     {
       sectionId: 'experience',
       point: [-7.14, 5.65, -2.42],
@@ -259,13 +265,13 @@ const blenderHotspots: Array<{
     },
     {
       sectionId: 'personal',
-      point: [3.815, 4.308, -7.339],
+      point: blenderCalibratedMusicHotspotPosition,
       cameraPosition: [8.6, 13.4, 2.4],
       lookAt: [3.8, 2.7, -7.25],
     },
     {
       sectionId: 'achievements',
-      point: [2.85, 4.62, -7.16],
+      point: blenderCalibratedTrophyHotspotPosition,
       cameraPosition: [8.2, 12.9, 1.85],
       lookAt: [3.08, 3.18, -7.18],
     },
@@ -888,7 +894,7 @@ export function RoomScene({
         <CameraRig activeSection={focusedSection} homeView={cameraHome} />
         <RoomLights nightMode={nightMode} />
         {hasBlenderModel ? (
-          <>
+          <group position={blenderScenePosition} rotation={blenderSceneRotation} scale={blenderSceneScale}>
             <BlenderRoomModel
               onReady={onReady}
               onPlaceHotspot={onPlaceHotspot}
@@ -902,28 +908,35 @@ export function RoomScene({
             <BlenderShelfPortrait />
             <BlenderDeskWallStickyNotes />
             <BlenderTopShelfWallArtwork />
+            <BlenderHotspots
+              activeSection={activeSection}
+              musicHotspotPosition={musicHotspotPosition}
+              onSelect={onSelect}
+              trophyHotspotPosition={trophyHotspotPosition}
+            />
+            <VinylRecord
+              isMusicPlaying={isMusicPlaying}
+              hasBlenderModel={hasBlenderModel}
+              onPlaceHotspot={onPlaceHotspot}
+              onMove={onMoveVinyl}
+              position={vinylPosition}
+            />
+            <ContactShadows position={[0, 0.015, 0]} opacity={nightMode ? 0.08 : 0.16} scale={9} blur={3.4} far={4} />
+          </group>
+        ) : (
+          <>
+            <RoomShell onPlaceVinyl={onPlaceVinyl} vinylPlacementMode={vinylPlacementMode} />
+            <Furniture activeSection={activeSection} onSelect={onSelect} />
+            <VinylRecord
+              isMusicPlaying={isMusicPlaying}
+              hasBlenderModel={hasBlenderModel}
+              onPlaceHotspot={onPlaceHotspot}
+              onMove={onMoveVinyl}
+              position={vinylPosition}
+            />
+            <ContactShadows position={[0, 0.015, 0]} opacity={nightMode ? 0.08 : 0.16} scale={9} blur={3.4} far={4} />
           </>
-        ) : (
-          <RoomShell onPlaceVinyl={onPlaceVinyl} vinylPlacementMode={vinylPlacementMode} />
         )}
-        {hasBlenderModel ? (
-          <BlenderHotspots
-            activeSection={activeSection}
-            musicHotspotPosition={musicHotspotPosition}
-            onSelect={onSelect}
-            trophyHotspotPosition={trophyHotspotPosition}
-          />
-        ) : (
-          <Furniture activeSection={activeSection} onSelect={onSelect} />
-        )}
-        <VinylRecord
-          isMusicPlaying={isMusicPlaying}
-          hasBlenderModel={hasBlenderModel}
-          onPlaceHotspot={onPlaceHotspot}
-          onMove={onMoveVinyl}
-          position={vinylPosition}
-        />
-        <ContactShadows position={[0, 0.015, 0]} opacity={nightMode ? 0.08 : 0.16} scale={9} blur={3.4} far={4} />
       </Suspense>
       <OrbitControls
         makeDefault
@@ -1389,15 +1402,14 @@ function BlenderRoomModel({
   return (
     <primitive
       object={scene}
-      position={[0, 0, 0]}
-      scale={blenderSceneScale}
       onClick={(event: ThreeEvent<MouseEvent>) => {
         if (!vinylPlacementMode && !onPlaceHotspot) return;
         event.stopPropagation();
+        const localPoint = scene.worldToLocal(event.point.clone());
         const point: [number, number, number] = [
-          Number(event.point.x.toFixed(3)),
-          Number(event.point.y.toFixed(3)),
-          Number(event.point.z.toFixed(3)),
+          Number(localPoint.x.toFixed(3)),
+          Number(localPoint.y.toFixed(3)),
+          Number(localPoint.z.toFixed(3)),
         ];
 
         if (vinylPlacementMode && onPlaceVinyl) {

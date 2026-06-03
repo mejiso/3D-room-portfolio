@@ -171,7 +171,7 @@ export function PortfolioOverlay({
                 <div className="mt-3 space-y-2 text-sm leading-6 text-ink/82">
                   <a
                     href="https://www.linkedin.com/in/mejiso/"
-                    color='#0077B5'
+                    color='#f5baf5'
                     target="_blank"
                     rel="noreferrer"
                     className="block font-semibold text-ink underline"
@@ -180,6 +180,7 @@ export function PortfolioOverlay({
                   </a>
                   <a
                     href="https://github.com/mejiso"
+                    color='#f5baf5'
                     target="_blank"
                     rel="noreferrer"
                     className="block font-semibold text-ink underline"
@@ -302,12 +303,12 @@ function ClubsDropdown({ color }: { color: string }) {
       title: 'alpha Kappa Delta Phi',
       subtitle: 'Asian Cultural Sorority',
       date: 'Membership',
-      description: 'Asian Interest Sorority focused on cultural, academic, and philanthropic events.',
+      description: 'Asian Sorority focused on cultural, academic, and philanthropic events.',
       bullets: ['Positions Held: Social Chair, Academic Chair'],
       tech: [],
     },
     {
-      title: 'Society of Asian Scientists & Engineers (SASE)',
+      title: 'Society of Asian Scientists & Engineers (SASE) General Member',
       subtitle: '',
       date: 'Membership',
       description: '',
@@ -315,7 +316,7 @@ function ClubsDropdown({ color }: { color: string }) {
       tech: [],
     },
     {
-      title: 'Vietnamese American Student Association (VASA)',
+      title: 'Girls Who Code (GWC) General Member',
       subtitle: '',
       date: 'Membership',
       description: '',

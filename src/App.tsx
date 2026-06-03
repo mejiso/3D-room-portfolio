@@ -1,7 +1,12 @@
 import { Music2, Pause, Play, SkipForward, Trophy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { PortfolioOverlay, type SongSnippet } from './components/PortfolioOverlay';
-import { RoomScene } from './components/RoomScene';
+import {
+  RoomScene,
+  blenderCalibratedMusicHotspotPosition,
+  blenderCalibratedTrophyHotspotPosition,
+  blenderCalibratedVinylPosition,
+} from './components/RoomScene';
 import { portfolioSections, sectionById, type PortfolioSection } from './data/portfolioSections';
 
 export type HotspotDraft = {
@@ -17,10 +22,16 @@ const autoplaySong: SongSnippet = {
 };
 
 const songSnippetManifestUrl = '/music-snippets/snippets.json';
-const defaultVinylPosition: [number, number, number] = [3.92, 0.54, -4.48];
-const defaultMusicHotspotPosition: [number, number, number] = [3.815, 4.308, -7.339];
-const misplacedMusicHotspotPosition: [number, number, number] = [3.92, 1.82, -4.48];
-const defaultTrophyHotspotPosition: [number, number, number] = [2.85, 4.62, -7.16];
+const roomModelUrl = import.meta.env.VITE_ROOM_MODEL_URL || '/models/sofiaroom.glb';
+const defaultVinylPosition: [number, number, number] = blenderCalibratedVinylPosition;
+const defaultMusicHotspotPosition: [number, number, number] = blenderCalibratedMusicHotspotPosition;
+const defaultTrophyHotspotPosition: [number, number, number] = blenderCalibratedTrophyHotspotPosition;
+const staleVinylPositions: Array<[number, number, number]> = [[3.92, 0.54, -4.48]];
+const staleMusicHotspotPositions: Array<[number, number, number]> = [
+  [3.815, 4.308, -7.339],
+  [3.92, 1.82, -4.48],
+];
+const staleTrophyHotspotPositions: Array<[number, number, number]> = [[2.85, 4.62, -7.16]];
 const musicHotspotStorageKey = 'sofia-room-music-hotspot-position';
 const vinylPositionStorageKey = 'sofia-room-vinyl-position';
 const trophyHotspotStorageKey = 'sofia-room-trophy-hotspot-position';
@@ -37,19 +48,22 @@ function formatPlaybackTime(seconds: number) {
 }
 
 function loadVinylPosition(): [number, number, number] {
-  return loadStoredPosition(vinylPositionStorageKey, defaultVinylPosition);
+  return loadStoredPosition(vinylPositionStorageKey, defaultVinylPosition, staleVinylPositions);
 }
 
 function loadTrophyHotspotPosition(): [number, number, number] {
-  return loadStoredPosition(trophyHotspotStorageKey, defaultTrophyHotspotPosition);
+  return loadStoredPosition(trophyHotspotStorageKey, defaultTrophyHotspotPosition, staleTrophyHotspotPositions);
 }
 
 function loadMusicHotspotPosition(): [number, number, number] {
-  const savedPosition = loadStoredPosition(musicHotspotStorageKey, defaultMusicHotspotPosition);
-  return positionsMatch(savedPosition, misplacedMusicHotspotPosition) ? defaultMusicHotspotPosition : savedPosition;
+  return loadStoredPosition(musicHotspotStorageKey, defaultMusicHotspotPosition, staleMusicHotspotPositions);
 }
 
-function loadStoredPosition(storageKey: string, fallback: [number, number, number]): [number, number, number] {
+function loadStoredPosition(
+  storageKey: string,
+  fallback: [number, number, number],
+  stalePositions: Array<[number, number, number]> = [],
+): [number, number, number] {
   if (typeof window === 'undefined') return fallback;
 
   try {
@@ -61,7 +75,8 @@ function loadStoredPosition(storageKey: string, fallback: [number, number, numbe
       && parsedPosition.length === 3
       && parsedPosition.every((value) => typeof value === 'number')
     ) {
-      return parsedPosition as [number, number, number];
+      const position = parsedPosition as [number, number, number];
+      return stalePositions.some((stalePosition) => positionsMatch(position, stalePosition)) ? fallback : position;
     }
   } catch {
     return fallback;
@@ -91,7 +106,7 @@ export default function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const clickAudioRef = useRef<HTMLAudioElement | null>(null);
   const autoplayAttemptedRef = useRef(false);
-  const usesBlenderRoom = Boolean(import.meta.env.VITE_ROOM_MODEL_URL);
+  const usesBlenderRoom = Boolean(roomModelUrl);
   const realHotspotsReady = true;
   const visibleSections = usesBlenderRoom
     ? [sectionById.experience, sectionById.personal, sectionById.achievements, sectionById.research, sectionById.funfacts]

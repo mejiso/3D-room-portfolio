@@ -190,7 +190,7 @@ export default function App() {
         onClose={() => setActiveSection(null)}
       />
       {currentSong && !activeSection ? (
-        <div className={`pointer-events-auto fixed bottom-3 right-3 z-50 w-[min(20.5rem,calc(100vw-1.5rem))] px-0 py-0 sm:bottom-5 sm:right-5 ${nightMode ? 'text-white' : 'text-ink'}`}>
+        <div className={`portfolio-music-player pointer-events-auto fixed bottom-[4.75rem] left-3 right-auto z-50 w-[min(20.5rem,calc(100vw-1.5rem))] px-0 py-0 sm:bottom-5 sm:left-auto sm:right-5 ${nightMode ? 'text-white' : 'text-ink'}`}>
           <div className={`mb-1 text-[0.68rem] font-medium leading-tight ${nightMode ? 'text-white/90' : 'text-ink/80'}`}>
             {currentSong.title} • Sofia
           </div>

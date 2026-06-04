@@ -1,6 +1,6 @@
 import { Billboard, ContactShadows, Float, Html, OrbitControls, PerspectiveCamera, Text, Text3D, useGLTF, useProgress, useTexture } from '@react-three/drei';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
-import { Suspense, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type CSSProperties } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentType, type CSSProperties } from 'react';
 import { ACESFilmicToneMapping, Box3, CanvasTexture, DoubleSide, EdgesGeometry, LineBasicMaterial, LineSegments, MathUtils, Mesh as ThreeMesh, MeshStandardMaterial, MeshToonMaterial, Plane, PlaneGeometry, RepeatWrapping, SRGBColorSpace, Vector3, type Color, type Group, type Material, type Mesh, type MeshBasicMaterial, type Object3D, type Texture } from 'three';
 import { FlaskConical, Laptop, Music2, Trophy } from 'lucide-react';
 import { homeCamera, portfolioSections, sectionById, type PortfolioSection, type SectionId } from '../data/portfolioSections';
@@ -288,6 +288,11 @@ const blenderHomeCamera = {
   position: [28, 26, -28] as [number, number, number],
   lookAt: [0.5, 5.2, 1.2] as [number, number, number],
 };
+const blenderMobileHomeCamera = {
+  position: [38, 30, -38] as [number, number, number],
+  lookAt: [0.6, 5.1, 1.1] as [number, number, number],
+};
+const compactViewportQuery = '(max-width: 820px)';
 
 const hotspotIconMap: Record<SectionId, ComponentType<{ className?: string; style?: CSSProperties }>> = {
   experience: Laptop,
@@ -314,6 +319,40 @@ const edgeLineMaterial = new LineBasicMaterial({
   opacity: 0.24,
   depthTest: true,
 });
+
+function useIsMobileViewport() {
+  const [isMobile, setIsMobile] = useState(() => (
+    typeof window !== 'undefined'
+      ? window.matchMedia(compactViewportQuery).matches
+      : false
+  ));
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(compactViewportQuery);
+    const updateViewport = () => setIsMobile(mediaQuery.matches);
+
+    updateViewport();
+    mediaQuery.addEventListener('change', updateViewport);
+    return () => mediaQuery.removeEventListener('change', updateViewport);
+  }, []);
+
+  return isMobile;
+}
+
+function frameCameraForMobile({
+  cameraPosition,
+  lookAt,
+}: {
+  cameraPosition: [number, number, number];
+  lookAt: [number, number, number];
+}) {
+  const camera = new Vector3(...cameraPosition);
+  const target = new Vector3(...lookAt);
+  const mobileCamera = target.clone().add(camera.sub(target).multiplyScalar(1.24));
+
+  mobileCamera.y += 1.15;
+  return mobileCamera.toArray() as [number, number, number];
+}
 
 function createWoodTexture({
   baseColors,
@@ -839,7 +878,8 @@ export function RoomScene({
   vinylPosition,
 }: RoomSceneProps) {
   const hasBlenderModel = Boolean(blenderModelUrl);
-  const cameraHome = hasBlenderModel ? blenderHomeCamera : homeCamera;
+  const isMobileViewport = useIsMobileViewport();
+  const cameraHome = hasBlenderModel && isMobileViewport ? blenderMobileHomeCamera : hasBlenderModel ? blenderHomeCamera : homeCamera;
   const focusedSection = useMemo(() => {
     if (!hasBlenderModel || !activeSection) return activeSection;
     const hotspot = blenderHotspotBySection.get(activeSection.id);
@@ -855,13 +895,19 @@ export function RoomScene({
     const customCameraPosition = activeSection.id === 'personal' && hasBlenderModel
       ? [7.35, 4.9, -0.32] as [number, number, number]
       : hotspot.cameraPosition;
+    const framedCameraPosition = isMobileViewport
+      ? frameCameraForMobile({
+        cameraPosition: customCameraPosition,
+        lookAt: customLookAt,
+      })
+      : customCameraPosition;
 
     return {
       ...activeSection,
-      cameraPosition: customCameraPosition,
+      cameraPosition: framedCameraPosition,
       lookAt: customLookAt,
     };
-  }, [activeSection, hasBlenderModel, musicHotspotPosition, trophyHotspotPosition, vinylPosition]);
+  }, [activeSection, hasBlenderModel, isMobileViewport, musicHotspotPosition, trophyHotspotPosition, vinylPosition]);
 
   return (
     <Canvas
@@ -883,7 +929,7 @@ export function RoomScene({
           hasBlenderModel ? (nightMode ? 172 : 178) : (nightMode ? 16 : 17),
         ]}
       />
-      <PerspectiveCamera makeDefault fov={42} position={cameraHome.position} />
+      <PerspectiveCamera makeDefault fov={hasBlenderModel && isMobileViewport ? 50 : 42} position={cameraHome.position} />
       <Suspense fallback={<RoomLoadingScreen label="Loading" />}>
         <CameraRig activeSection={focusedSection} homeView={cameraHome} />
         <RoomLights nightMode={nightMode} />
@@ -929,8 +975,8 @@ export function RoomScene({
       <OrbitControls
         makeDefault
         target={cameraHome.lookAt}
-        minDistance={hasBlenderModel ? 8 : 3.5}
-        maxDistance={hasBlenderModel ? 110 : 10}
+        minDistance={hasBlenderModel ? (isMobileViewport ? 12 : 8) : 3.5}
+        maxDistance={hasBlenderModel ? (isMobileViewport ? 128 : 110) : 10}
         minPolarAngle={hasBlenderModel ? Math.PI / 5.2 : Math.PI / 5}
         maxPolarAngle={hasBlenderModel ? Math.PI / 2.45 : Math.PI / 2.08}
         minAzimuthAngle={hasBlenderModel ? Math.PI * 0.58 : undefined}

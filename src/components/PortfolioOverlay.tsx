@@ -86,7 +86,7 @@ export function PortfolioOverlay({
       </header>
 
       <div className="pointer-events-auto flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <nav className="grid grid-cols-3 gap-2 sm:grid-cols-7">
+        <nav className="portfolio-bottom-nav flex w-[min(20.5rem,calc(100vw-1.5rem))] items-center justify-between gap-2 overflow-x-auto sm:grid sm:w-auto sm:grid-cols-7 sm:justify-start">
           {sections.map((section, index) => {
             const Icon = iconMap[section.id];
             const isActive = activeSection?.id === section.id;

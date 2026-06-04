@@ -275,6 +275,24 @@ a {
   animation: icon-float 2.25s ease-in-out infinite;
 }
 
+@media (min-width: 640px) and (max-width: 820px) {
+  .portfolio-music-player {
+    right: auto;
+    bottom: 8.25rem;
+    left: 0.75rem;
+  }
+
+  .portfolio-bottom-nav {
+    display: flex;
+    width: min(20.5rem, calc(100vw - 1.5rem));
+    max-width: min(20.5rem, calc(100vw - 1.5rem));
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    grid-template-columns: none;
+  }
+}
+
 @keyframes icon-float {
 
   0%,
